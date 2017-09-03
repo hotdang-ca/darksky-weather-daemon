@@ -1,6 +1,8 @@
 import axios from 'axios';
 import assert from 'assert';
 
+assert.notEqual(process.env.OMEGA2, undefined, 'OMEGA2 should be true or false.');
+
 const REGINA_COORDS = '50.450484,-104.651229';
 
 assert(process.env.DARKSKY_API_KEY, 'DarkSky API Key must exist.');
@@ -34,7 +36,27 @@ const getWeather = () => {
 };
 
 const sendOutput = (output) => {
-  // to the console.
+  oled(output); // go to OLED
+  consolelog(output); // to the console
+}
+
+const oled = (output) => {
+  if (process.env.OMEGA2 !== 'true') {
+    return;
+  }
+
+  try {
+    const oledExp = require('/usr/bin/node-oled-exp');
+    oledExp.init();
+    oledExp.setTextColumns();
+    oledExp.setCursor(0, 0);
+    oledExp.write(output);
+  } catch (e) {
+    console.log('Error with oled');
+  }
+}
+
+const consolelog = (output) => {
   console.log(output);
 }
 

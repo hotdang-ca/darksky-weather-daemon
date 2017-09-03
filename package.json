@@ -6,7 +6,9 @@
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "start": "babel-node ./index.js --presets es2015,stage-0",
-    "daemon": "forever start node_modules/babel-cli/bin/babel-node.js ./index.js --presets es2015,stage-0"
+    "omega": "node ./dist.js",
+    "daemon": "forever start node_modules/babel-cli/bin/babel-node.js ./index.js --presets es2015,stage-0",
+    "build": "babel index.js -o dist.js --presets es2015,stage-0"
   },
   "keywords": [
     "weather",
