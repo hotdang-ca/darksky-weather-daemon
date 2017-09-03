@@ -21,7 +21,8 @@
   "dependencies": {
     "axios": "^0.16.2",
     "express": "^4.15.4",
-    "forever": "^0.15.3"
+    "forever": "^0.15.3",
+    "pusher": "^1.5.1"
   },
   "devDependencies": {
     "babel-preset-es2015": "^6.24.1",

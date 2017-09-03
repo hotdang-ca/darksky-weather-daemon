@@ -5,9 +5,12 @@ When on an Omega2 or Omega2+ with OLED expansion, will also output to the OLED.
 
 ## Getting Started
 You may have problems with `npm install` on a physical Omega2; current solution is to use the `npm run omega2` which will run the current `dist.js` file. Do a `npm install axios` first, which is the only REAL dependency, plus your OLED nodejs tools on the device. `okpg install node-oled-exp`.
+You can also save the included `weather.html` file anywhere you want; it should load the same message provided your `PUSHER_CHANNEL` and `PUSHER_EVENT` are set in both ENV (see below) and the html file.
 
 ## Environment Variables
 You need a `DARKSKY_API_KEY` and, optionally, an `OMEGA2` key, which can be set to `true`, or any other value to ignore omega2 OLED functions. These should be in your ENV, eg, `export DARKSKY_API_KEY=yourapikeyhere`, and optionally, `export OMEGA2=true`.
+To support Pusher (a stellar Websocket API), you will also need the following `ENV` vars set (or set to blank values).
+`PUSHER_APPID`, `PUSHER_KEY`, `PUSHER_SECRET`, `PUSHER_CLUSTER`, `PUSHER_CHANNEL`, and `PUSHER_EVENT`.
 
 ## Author
 James Perih <james@hotdang.ca>.

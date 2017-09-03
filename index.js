@@ -1,20 +1,24 @@
 import axios from 'axios';
 import assert from 'assert';
+import Pusher from 'pusher';
 
+assert(process.env.PUSHER_APPID, 'PUSHER_APPID must be set.');
+assert(process.env.PUSHER_KEY, 'PUSHER_KEY must be set.');
+assert(process.env.PUSHER_SECRET, 'PUSHER_SECRET must be set.');
+assert(process.env.PUSHER_CLUSTER, 'PUSHER_CLUSER must be set.');
+assert(process.env.PUSHER_CHANNEL, 'PUSHER_CHANNEL must be set.');
+assert(process.env.PUSHER_EVENT, 'PUSHER_EVENT must be set.');
+assert(process.env.DARKSKY_API_KEY, 'DarkSky API Key must exist.');
 assert.notEqual(process.env.OMEGA2, undefined, 'OMEGA2 should be true or false.');
 
-const REGINA_COORDS = '50.450484,-104.651229';
-
-assert(process.env.DARKSKY_API_KEY, 'DarkSky API Key must exist.');
-const API_KEY = process.env.DARKSKY_API_KEY;
-
-const UNITS = 'ca';
-const FREQUENCY = 2; // in minutes
-const directions = ['N', 'NNE', 'NE', 'ENE', 'E', 'ESE', 'SE', 'SSE', 'S', 'SSW', 'SW', 'WSW', 'W', 'WNW', 'NW', 'NNW'];
-
-const API_URL = `https://api.darksky.net/forecast/${API_KEY}/${REGINA_COORDS}?exclude=minutely,hourly,daily,alerts,flags&units=${UNITS}`;
-
+let pusher;
 let output = '';
+const UNITS = 'ca';
+const FREQUENCY = 10; // in minutes
+const directions = ['N', 'NNE', 'NE', 'ENE', 'E', 'ESE', 'SE', 'SSE', 'S', 'SSW', 'SW', 'WSW', 'W', 'WNW', 'NW', 'NNW'];
+const REGINA_COORDS = '50.450484,-104.651229';
+const DARKSKY_API_KEY = process.env.DARKSKY_API_KEY;
+const API_URL = `https://api.darksky.net/forecast/${DARKSKY_API_KEY}/${REGINA_COORDS}?exclude=minutely,hourly,daily,alerts,flags&units=${UNITS}`;
 
 const getWeather = () => {
   axios.get(API_URL).then((response) => {
@@ -29,18 +33,19 @@ const getWeather = () => {
         const lastUpdate = new Date(time);
         output = `REGINA: It is currently ${parseInt(temperature, 10)}°C and ${summary}. Feels like ${parseInt(apparentTemperature, 10)}°C. Wind ${parseInt(windSpeed, 10)}km/h, gusting to ${parseInt(windGust, 10)}km/h from the ${degreesToCompass(windBearing)}. Updated ${lastUpdate.toLocaleTimeString()}\nPowered by DarkSky`;
 
-        sendOutput(output);
+        sendOutput(output, currently);
       }
     }
   });
 };
 
-const sendOutput = (output) => {
-  oled(output); // go to OLED
-  consolelog(output); // to the console
+const sendOutput = (output, raw) => {
+  oledOutput(output); // go to OLED
+  consoleOutput(output); // to the console
+  pusherOutput(output, raw); // to go Pusher
 }
 
-const oled = (output) => {
+const oledOutput = (output) => {
   if (process.env.OMEGA2 !== 'true') {
     return;
   }
@@ -48,6 +53,7 @@ const oled = (output) => {
   try {
     const oledExp = require('/usr/bin/node-oled-exp');
     oledExp.init();
+    oledExp.clear();
     oledExp.setTextColumns();
     oledExp.setCursor(0, 0);
     oledExp.write(output);
@@ -56,7 +62,28 @@ const oled = (output) => {
   }
 }
 
-const consolelog = (output) => {
+const pusherOutput = (output, raw) => {
+  try {
+    if (!pusher) {
+      pusher = new Pusher({
+        appId: process.env.PUSHER_APPID,
+        key: process.env.PUSHER_KEY,
+        secret: process.env.PUSHER_SECRET,
+        cluster: process.env.PUSHER_CLUSTER,
+        encrypted: true,
+      });
+    }
+
+    pusher.trigger(process.env.PUSHER_CHANNEL, process.env.PUSHER_EVENT, {
+      message: output,
+      ...raw,
+    });
+  } catch (e) {
+    console.log('Error with pusher', e);
+  }
+}
+
+const consoleOutput = (output) => {
   console.log(output);
 }
 
