@@ -2,12 +2,18 @@ import axios from 'axios';
 import assert from 'assert';
 import Pusher from 'pusher';
 
-assert(process.env.PUSHER_APPID, 'PUSHER_APPID must be set.');
-assert(process.env.PUSHER_KEY, 'PUSHER_KEY must be set.');
-assert(process.env.PUSHER_SECRET, 'PUSHER_SECRET must be set.');
-assert(process.env.PUSHER_CLUSTER, 'PUSHER_CLUSER must be set.');
-assert(process.env.PUSHER_CHANNEL, 'PUSHER_CHANNEL must be set.');
-assert(process.env.PUSHER_EVENT, 'PUSHER_EVENT must be set.');
+/* We require these set in ENV. */
+require('dotenv').config();
+assert.notEqual(process.env.PUSHER, undefined, 'PUSHER should be true or false.');
+if (process.env.PUSHER) {
+  assert(process.env.PUSHER_APPID, 'PUSHER_APPID must be set.');
+  assert(process.env.PUSHER_KEY, 'PUSHER_KEY must be set.');
+  assert(process.env.PUSHER_SECRET, 'PUSHER_SECRET must be set.');
+  assert(process.env.PUSHER_CLUSTER, 'PUSHER_CLUSER must be set.');
+  assert(process.env.PUSHER_CHANNEL, 'PUSHER_CHANNEL must be set.');
+  assert(process.env.PUSHER_EVENT, 'PUSHER_EVENT must be set.');
+}
+
 assert(process.env.DARKSKY_API_KEY, 'DarkSky API Key must exist.');
 assert.notEqual(process.env.OMEGA2, undefined, 'OMEGA2 should be true or false.');
 
@@ -63,6 +69,10 @@ const oledOutput = (output) => {
 }
 
 const pusherOutput = (output, raw) => {
+  if (process.env.PUSHER !== 'true') {
+    return;
+  }
+
   try {
     if (!pusher) {
       pusher = new Pusher({

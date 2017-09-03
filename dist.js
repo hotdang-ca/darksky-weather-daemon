@@ -16,12 +16,18 @@ var _pusher2 = _interopRequireDefault(_pusher);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
-(0, _assert2.default)(process.env.PUSHER_APPID, 'PUSHER_APPID must be set.');
-(0, _assert2.default)(process.env.PUSHER_KEY, 'PUSHER_KEY must be set.');
-(0, _assert2.default)(process.env.PUSHER_SECRET, 'PUSHER_SECRET must be set.');
-(0, _assert2.default)(process.env.PUSHER_CLUSTER, 'PUSHER_CLUSER must be set.');
-(0, _assert2.default)(process.env.PUSHER_CHANNEL, 'PUSHER_CHANNEL must be set.');
-(0, _assert2.default)(process.env.PUSHER_EVENT, 'PUSHER_EVENT must be set.');
+/* We require these set in ENV. */
+require('dotenv').config();
+_assert2.default.notEqual(process.env.PUSHER, undefined, 'PUSHER should be true or false.');
+if (process.env.PUSHER) {
+  (0, _assert2.default)(process.env.PUSHER_APPID, 'PUSHER_APPID must be set.');
+  (0, _assert2.default)(process.env.PUSHER_KEY, 'PUSHER_KEY must be set.');
+  (0, _assert2.default)(process.env.PUSHER_SECRET, 'PUSHER_SECRET must be set.');
+  (0, _assert2.default)(process.env.PUSHER_CLUSTER, 'PUSHER_CLUSER must be set.');
+  (0, _assert2.default)(process.env.PUSHER_CHANNEL, 'PUSHER_CHANNEL must be set.');
+  (0, _assert2.default)(process.env.PUSHER_EVENT, 'PUSHER_EVENT must be set.');
+}
+
 (0, _assert2.default)(process.env.DARKSKY_API_KEY, 'DarkSky API Key must exist.');
 _assert2.default.notEqual(process.env.OMEGA2, undefined, 'OMEGA2 should be true or false.');
 
@@ -86,6 +92,10 @@ var oledOutput = function oledOutput(output) {
 };
 
 var pusherOutput = function pusherOutput(output, raw) {
+  if (process.env.PUSHER !== 'true') {
+    return;
+  }
+
   try {
     if (!pusher) {
       pusher = new _pusher2.default({

@@ -9,8 +9,10 @@ You can also save the included `weather.html` file anywhere you want; it should 
 
 ## Environment Variables
 You need a `DARKSKY_API_KEY` and, optionally, an `OMEGA2` key, which can be set to `true`, or any other value to ignore omega2 OLED functions. These should be in your ENV, eg, `export DARKSKY_API_KEY=yourapikeyhere`, and optionally, `export OMEGA2=true`.
-To support Pusher (a stellar Websocket API), you will also need the following `ENV` vars set (or set to blank values).
-`PUSHER_APPID`, `PUSHER_KEY`, `PUSHER_SECRET`, `PUSHER_CLUSTER`, `PUSHER_CHANNEL`, and `PUSHER_EVENT`.
+To support Pusher (a stellar Websocket API), you will also need the following `ENV` vars set (or set to blank values). `PUSHER` should be set to true, and then set`PUSHER_APPID`, `PUSHER_KEY`, `PUSHER_SECRET`, `PUSHER_CLUSTER`, `PUSHER_CHANNEL`, and `PUSHER_EVENT` to values provided to you by the Pusher Dashboard. Or, use `PUSHER=false` to not use pusher.
+
+## DotEnv
+You can put the above environment variables in a `.env` file in the root of the project, to keep things sane.
 
 ## Author
 James Perih <james@hotdang.ca>.
