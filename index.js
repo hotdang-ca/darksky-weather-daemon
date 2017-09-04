@@ -1,6 +1,7 @@
 import axios from 'axios';
 import assert from 'assert';
 import Pusher from 'pusher';
+import express from 'express';
 
 /* We require these set in ENV. */
 require('dotenv').config();
@@ -108,3 +109,18 @@ setInterval(() => {
 
 console.log('Starting weather daemon');
 getWeather();
+
+/* start an express server, which will keep us up and running. */
+const app = express();
+app.get('/', (req, res) => {
+  if (!output) {
+    res.send('No data');
+    return;
+  }
+  res.send(output);
+
+});
+const PORT = process.env.PORT || 3000;
+app.listen(PORT, () => {
+  console.log(`Listening on ${PORT}.`);
+});

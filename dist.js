@@ -14,6 +14,10 @@ var _pusher = require('pusher');
 
 var _pusher2 = _interopRequireDefault(_pusher);
 
+var _express = require('express');
+
+var _express2 = _interopRequireDefault(_express);
+
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 /* We require these set in ENV. */
@@ -130,3 +134,17 @@ setInterval(function () {
 
 console.log('Starting weather daemon');
 getWeather();
+
+/* start an express server, which will keep us up and running. */
+var app = (0, _express2.default)();
+app.get('/', function (req, res) {
+  if (!output) {
+    res.send('No data');
+    return;
+  }
+  res.send(output);
+});
+var PORT = process.env.PORT || 3000;
+app.listen(PORT, function () {
+  console.log('Listening on ' + PORT + '.');
+});
